@@ -1,5 +1,5 @@
 import boto3
-
+import traceback
 def lambda_handler(event,context):
     '''
     Params:
@@ -7,15 +7,31 @@ def lambda_handler(event,context):
     Returns:
     list that contains information about lambda.
     '''
-    result = ""
-    if event.get('req') is None:
-        regions=['us-east-1','ap-south-1']
-    else:
-        regions = event.get('req')
-    for region in regions:    
-        result = result + get_info(region)
-    
-    return result
+    try:
+
+        result = ""
+        if event.get('req') is None:
+            regions=['us-east-1','ap-south-1']
+        else:
+            regions = event.get('req')
+        for region in regions:    
+            result = result + get_info(region)
+
+        return {
+        "isBase64Encoded":True,
+        "statusCode": "200",
+        "body": result
+        }
+
+    except Exception as ex:
+        exception_message = traceback.format_exc(chain=True)  
+        return {
+        "isBase64Encoded":True,
+        "statusCode": "400",
+        "body": exception_message
+        }
+
+        
 
                 
 def get_info(region_name):
