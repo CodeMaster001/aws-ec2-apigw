@@ -7,7 +7,7 @@ def lambda_handler(event, context):
     Params:
     event: Event which is used as an input to lambda contains list of regions or list all regions if not present
     Returns:
-    list that contains information about lambda.
+    (return):List of EC2 instances in the format which is accepted by API gateway.
     '''
     data = None
 
@@ -34,10 +34,17 @@ def lambda_handler(event, context):
 
 
 def get_info(region_name):
+    '''
+    Params:
+    region_name: Name of the region from which ec2 information needs to be fetched
+    Returns:
+    result(str):Returns a csv entry to be appended to the output
+    '''
 
     result = ""
     ec2client = boto3.client('ec2', region_name=region_name)
     response = ec2client.describe_instances()
+
     for reservation in response["Reservations"]:
         for instance in reservation["Instances"]:
             instance_id = instance['InstanceId']
