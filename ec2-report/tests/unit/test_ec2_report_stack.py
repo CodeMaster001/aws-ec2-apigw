@@ -1,15 +1,38 @@
 import aws_cdk as core
 import aws_cdk.assertions as assertions
 
-from ec2_report.ec2_report_stack import Ec2ReportStack
+from modules.pipeline.stacks.api_gw_stack import ApiLambdaStack
 
-# example tests. To run these tests, uncomment this file along with the example
-# resource in ec2_report/ec2_report_stack.py
-def test_sqs_queue_created():
+#Some tests to show cdk can be tested with, we could add more tests but intrest of time ,I am adding only few tests.
+
+def test_aws_iam_role_created():
     app = core.App()
-    stack = Ec2ReportStack(app, "ec2-report")
+    stack = ApiLambdaStack(app, "ec2-report",vpc=None)
     template = assertions.Template.from_stack(stack)
 
-#     template.has_resource_properties("AWS::SQS::Queue", {
-#         "VisibilityTimeout": 300
-#     })
+    template.has_resource("AWS::IAM::Role",{})
+ 
+
+def test_lambda_is_created():
+    app = core.App()
+    stack = ApiLambdaStack(app, "ec2-report",vpc=None)
+    template = assertions.Template.from_stack(stack)
+
+    template.has_resource("AWS::Lambda::Function",{})
+
+
+def test_api_gateway_created():
+    app = core.App()
+    stack = ApiLambdaStack(app, "ec2-report",vpc=None)
+    template = assertions.Template.from_stack(stack)
+
+    template.has_resource("AWS::ApiGateway::RestApi",{})
+
+
+def test_api_fetch_report_created():
+    app = core.App()
+    stack = ApiLambdaStack(app, "ec2-report",vpc=None)
+    template = assertions.Template.from_stack(stack)
+
+    template.has_resource_properties("AWS::ApiGateway::Resource",{"PathPart":"fetch_report"})
+
