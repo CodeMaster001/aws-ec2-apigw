@@ -1,6 +1,6 @@
 import boto3
 import traceback
-
+import json
 
 def lambda_handler(event, context):
     '''
@@ -17,7 +17,7 @@ def lambda_handler(event, context):
         if event.get('req') is None:
             regions = ['us-east-1', 'ap-south-1']
         else:
-            regions = event.get('req')
+            regions = json.loads(event.get('body'))['regions']
 
         for region in regions:
             result = result + get_info(region)

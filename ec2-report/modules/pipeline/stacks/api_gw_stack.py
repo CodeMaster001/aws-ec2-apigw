@@ -15,6 +15,7 @@ from aws_cdk import (
     aws_ec2 as ec2,
     aws_apigatewayv2 as apigwv2,
     aws_route53_targets as targets,
+    aws_secretsmanager as secretsmanager
 
 
 )
@@ -27,11 +28,13 @@ class ApiLambdaStack(Stack):
 
        ###########################
        #
-       # Lambda Configuration
+       # Lambda Configurationgttg
+
        # #########################
 
         lambda_role = iam.Role(
             self, "Role", assumed_by=iam.ServicePrincipal("lambda.amazonaws.com"))
+
         lambda_role.add_to_policy(iam.PolicyStatement(
             effect=iam.Effect.ALLOW,
             resources=["*"],
@@ -50,13 +53,11 @@ class ApiLambdaStack(Stack):
                                                 "../ec2-report/modules/pipeline/lambdas"),
                                             memory_size=2048,
                                             timeout=Duration.seconds(60*3),
-                                            role=lambda_role,
-                                            vpc=vpc
+                                            role=lambda_role,vpc=vpc
                                             )
 
         ##################################
-        # API Configuration
-        #
+        # API Configuration,
         ##################################
 
         base_api = apigw.RestApi(
@@ -65,16 +66,30 @@ class ApiLambdaStack(Stack):
         base_api.root.add_method("Any")
         fetch_api = base_api.root.add_resource('fetch_report')
         fetch_api.add_method('POST', integration=apigw.LambdaIntegration(
-            handler=report_lambda), api_key_required=True)  # PI KEY
-        api_key = apigw.ApiKey(
-            self, "apikey", api_key_name="prod", value="1234567891011121314151617181920")
-        plan = base_api.add_usage_plan("usage", name="ec2_reports", throttle={
-                                       "rate_limit": 10, "burst_limit": 20})
-        plan.add_api_key(api_key)
+            handler=report_lambda,proxy=True), api_key_required=True)  # PI KEY
+        
+        ##################################
+        # Create deployment and Stage
+        ##################################
+   
 
         deployment = apigw.Deployment(
             self, id="dep", api=base_api, retain_deployments=True)
         stage = apigw.Stage(
             self, "dev", deployment=deployment, stage_name="test")
         base_api.deployment_stage = stage
-        aws_cdk.CfnOutput(self, 'apiUrl', value=base_api.url)
+
+        ##################################
+        # Create Usage Plan amd add api key to it
+        ##################################
+   
+
+        plan = base_api.add_usage_plan("usage", name="ec2_reports", throttle={
+                                       "rate_limit": 10, "burst_limit": 20},api_stages=[ apigw.UsagePlanPerApiStage(api=base_api,stage=stage)])
+        api_key = apigw.ApiKey(
+            self, "apikey", api_key_name="prod", value=self.node.try_get_context('api_key'))
+        plan.add_api_key(api_key)
+        
+        aws_cdk.CfnOutput(self, 'apiBaseUrl', value=base_api.url)
+        aws_cdk.CfnOutput(self, 'apiName', value=fetch_api.path)
+
