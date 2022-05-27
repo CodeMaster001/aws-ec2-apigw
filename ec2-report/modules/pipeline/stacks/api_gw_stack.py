@@ -9,6 +9,7 @@ from aws_cdk import (
     aws_elasticloadbalancingv2 as elbv2,
     aws_lambda,
     Duration,
+    aws_iam as iam,
     aws_apigateway as apigw,
 
 
@@ -27,15 +28,25 @@ class ApiLambdaStack(Stack):
        # 
        # Lambda Configuration
        # ######################### 
+
+        lambda_role = iam.Role(self, "Role",assumed_by=iam.ServicePrincipal("ec2.amazonaws.com")) 
+        lambda_role.add_to_policy(iam.PolicyStatement(
+        effect=iam.Effect.ALLOW,
+        resources=["arn:aws:ec2:::*"],
+        actions=["ec2:Describe*"],
+       
+))
         report_lambda = aws_lambda.Function(self, "reporting_lambda",function_name="report_lambda",
                                                 runtime=aws_lambda.Runtime.PYTHON_3_9,
                                                 handler="reporting_lambda.lambda_handler",
                                                 code=aws_lambda.Code.from_asset("../ec2-report/modules/pipeline/lambdas"),
                                                 memory_size=2048,
                                                 timeout=Duration.seconds(60*3),
+                                                role=lambda_role
                                                 
                                                 )
 
+        
 
         ##################################
         #API Configuration
@@ -44,7 +55,7 @@ class ApiLambdaStack(Stack):
         base_api = apigw.RestApi(self, 'ApiGW',rest_api_name='ec2_report',deploy=False)
 
         base_api.root.add_method("Any")
-        fetch_api = base_api.root.add_resource('fetch')
+        fetch_api = base_api.root.add_resource('fetch_report')
         fetch_api.add_method('POST',integration=apigw.LambdaIntegration(handler=report_lambda),api_key_required=True) #PI KEY
         api_key = apigw.ApiKey(self,"apikey",api_key_name="prod",value="1234567891011121314151617181920")
         plan = base_api.add_usage_plan("usage",name="ec2_reports",throttle={"rate_limit":10,"burst_limit":20})
