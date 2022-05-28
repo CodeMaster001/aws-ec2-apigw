@@ -6,7 +6,7 @@ from aws_cdk import Stage
 import aws_cdk
 import os
 from constructs import Construct
-from stacks.api_lambda_stack import ApiLambdaStack
+from modules.pipeline.stacks.api_lambda_stack import ApiLambdaStack
 class ApiLambdaStage(Stage):
 
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
