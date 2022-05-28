@@ -2,14 +2,14 @@ import aws_cdk as core
 import aws_cdk.assertions as assertions
 
 
-from modules.pipeline.stacks.vpc_stack import VPCStack
+from modules.pipeline.stacks.env_stack import ENVStack
 
 # Some tests to show cdk can be tested with, we could add more tests but intrest of time ,I am adding only few tests.
 
 
 def test_aws_vpc_created():
     app = core.App()
-    stack = VPCStack(app, "vpc-stack")
+    stack = ENVStack(app, "vpc-stack")
     template = assertions.Template.from_stack(stack)
     print(template.to_json())
 
@@ -18,7 +18,7 @@ def test_aws_vpc_created():
 
 def test_aws_vpc_created_with_enabled_dns_support():
     app = core.App()
-    stack = VPCStack(app, "vpc-stack")
+    stack = ENVStack(app, "vpc-stack")
     template = assertions.Template.from_stack(stack)
 
 
@@ -27,7 +27,7 @@ def test_aws_vpc_created_with_enabled_dns_support():
 
 def test_aws_vpc_created_with_cidr_block():
     app = core.App()
-    stack = VPCStack(app, "vpc-stack")
+    stack = ENVStack(app, "vpc-stack")
     template = assertions.Template.from_stack(stack)
 
 

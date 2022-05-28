@@ -5,20 +5,15 @@
 from aws_cdk import Stack
 from constructs import Construct
 from aws_cdk import (
-    aws_lambda,
-    Duration,
-    aws_iam as iam,
-    aws_apigateway as apigw,
-    aws_route53 as dns,
     aws_ec2 as ec2,
-    aws_apigatewayv2 as apigwv2,
-    aws_route53_targets as targets,
+    aws_ssm as ssm
+
 
 
 )
 
 
-class VPCStack(Stack):
+class ENVStack(Stack):
 
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
@@ -44,6 +39,12 @@ class VPCStack(Stack):
                                    cidr_mask=26
                                )
                            ],
-                           nat_gateways=1,
+                           nat_gateways=1
 
-                           )
+                           )   
+
+        ssm.StringParameter(self, "Parameter",
+    allowed_pattern=".*",
+    description="The value Foo",
+    parameter_name="vpc-id",
+    string_value=self.vpc.vpc_id)
