@@ -51,6 +51,8 @@ class ApiLambdaStack(Stack):
             security_group_name="sg_elb"
         )
 
+        #Extra safety for lambda
+        
         self.lambda_sg.add_egress_rule(
             peer=ec2.Peer.any_ipv4(),
             connection=ec2.Port.tcp(443)
@@ -71,7 +73,7 @@ class ApiLambdaStack(Stack):
                                             memory_size=2048,
                                             timeout=Duration.seconds(60*3),
                                             role=self.lambda_role, vpc=vpc,
-                                            security_groups=[self.lambda_sg],
+                                            security_groups=[self.lambda_sg]
                                             )
 
         ##################################
