@@ -18,7 +18,7 @@ class PipelineStack(Stack):
                                                                     # Use a connection created using the AWS console to authenticate to GitHub
                                                                     # Other sources are available.
                                                                     input=connection_obj,
-                                                                    commands=["npm install -g aws-cdk@2.20.0","pwd",
+                                                                    commands=["npm install -g aws-cdk@2.25.0","pwd",
                                                                               "pip install -r ec2-report/requirements.txt","cd ec2-report", "pytest -v .", "cdk synth"]
 
                                                                     )
