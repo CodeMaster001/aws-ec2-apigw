@@ -19,7 +19,7 @@ class PipelineStack(Stack):
                                                                     # Other sources are available.
                                                                     input=connection_obj,
                                                                     commands=["npm install -g aws-cdk@2.20.0",
-                                                                              "pip install -r ec2-report/requirements.txt", "pytest -v ec2-report/tests", "cd ec2-reports", "cdk synth"]
+                                                                              "pip install -r ec2-report/requirements.txt","ls", "pytest -v ec2-report/tests", "cd ec2-reports", "cdk synth"]
 
                                                                     )
                                           )
