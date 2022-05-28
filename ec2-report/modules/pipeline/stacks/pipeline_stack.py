@@ -12,7 +12,7 @@ from modules.pipeline.stages.api_gw_stage import ApiLambdaStage
 class PipelineStack(Stack):
     def __init__(self, scope: Construct, id: str,  **kwargs):
         super().__init__(scope, id, **kwargs)
-        connection_obj = pipelines.CodePipelineSource.connection("CodeMaster001/aws-test", "pipeline_dev",connection_arn=self.node.try_get_context('codestar_connection'))
+        connection_obj = pipelines.CodePipelineSource.connection("CodeMaster001/aws-test", "main",connection_arn=self.node.try_get_context('codestar_connection'))
         pipeline = pipelines.CodePipeline(self, "Pipeline",
                                           synth=pipelines.ShellStep("Synth",
                                                                     # Use a connection created using the AWS console to authenticate to GitHub
