@@ -3,7 +3,7 @@ import os
 
 import aws_cdk as cdk
 
-from vpc_deployment.vpc_deployment_stack import VPCDeploymentStack
+from modules.vpc_deployment_stack import VPCDeploymentStack
 
 
 app = cdk.App()
