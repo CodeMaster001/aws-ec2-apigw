@@ -14,7 +14,7 @@ from aws_cdk import (
 )
 
 
-class ccApiLambdaStack(Stack):
+class ApiLambdaStack(Stack):
 
     def __init__(self, scope: Construct, construct_id: str, vpc: ec2.Vpc = None, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
