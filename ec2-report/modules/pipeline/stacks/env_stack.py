@@ -20,7 +20,6 @@ class ENVStack(Stack):
 
         #################################
         # SET UP VPC FOR NOW USE DEFAULT VPC
-        #
         ##################################
         self.vpc = ec2.Vpc(self, 'reportvpc',
                            cidr='192.168.50.0/24',
@@ -40,11 +39,4 @@ class ENVStack(Stack):
                                )
                            ],
                            nat_gateways=1
-
                            )   
-
-        ssm.StringParameter(self, "Parameter",
-    allowed_pattern=".*",
-    description="The value Foo",
-    parameter_name="vpc-id",
-    string_value=self.vpc.vpc_id)
