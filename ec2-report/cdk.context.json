@@ -8,6 +8,7 @@
     "us-east-1f"
   ],
   "vpc-id": "vpc-091dcfbea1b6f2316",
+  "api-key":"1234567891012345678910",
   "codestar_connection": "arn:aws:codestar-connections:us-east-1:261597632652:connection/0923fc1f-6635-4487-814e-7a34b6a7813f",
   "vpc-provider:account=261597632652:filter.vpc-id=vpc-06f4083e9431691dd:region=us-east-1:returnAsymmetricSubnets=true": {
     "vpcId": "vpc-06f4083e9431691dd",

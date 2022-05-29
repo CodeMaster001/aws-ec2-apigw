@@ -25,10 +25,15 @@ class PipelineStack(Stack):
                                                                     )
            
                                           )
+        
         #########################################################
-        #Add API Stack and add a manual approval step before that
+        #EC2 instances for showing that our API works
         #
         ########################################################
         ec2_stage = pipeline.add_stage(stage=EC2Stage(self, "DummyEC2Instance",env=Environment(account=os.getenv('CDK_DEFAULT_ACCOUNT'), region=os.getenv('CDK_DEFAULT_REGION'))))
 
+        #########################################################
+        #Add API Stack and add a manual approval step before that
+        #
+        ########################################################
         api_deployment_stage = pipeline.add_stage(stage=ApiLambdaStage(self, "APIPipleLine"),pre=[pipelines.ManualApprovalStep("Deploy API Approval")])
