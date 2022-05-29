@@ -14,7 +14,7 @@ def lambda_handler(event, context):
     try:
         result = ""
 
-        if event.get('req') is None:
+        if event.get('body') is None:
             regions = ['us-east-1', 'ap-south-1']
         else:
             regions = json.loads(event.get('body'))['regions']
