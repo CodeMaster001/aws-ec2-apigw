@@ -1,6 +1,7 @@
 import boto3
 import traceback
 import json
+import logging
 
 def lambda_handler(event, context):
     '''
@@ -13,7 +14,7 @@ def lambda_handler(event, context):
 
     try:
         result = ""
-
+        logging.info('Even received:'+str(event))
         if event.get('body') is None:
             regions = ['us-east-1', 'ap-south-1']
         else:
@@ -25,7 +26,9 @@ def lambda_handler(event, context):
         data = result
     except Exception as ex:
         data = traceback.format_exc(chain=True)
-
+    
+    logging.info('Output generated:'+str(data))
+    
     return {
         "isBase64Encoded": True,
         "statusCode": "200",
