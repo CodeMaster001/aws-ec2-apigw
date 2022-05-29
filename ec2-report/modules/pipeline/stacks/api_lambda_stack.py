@@ -103,7 +103,6 @@ class ApiLambdaStack(Stack):
             self, id="dep", api=base_api, retain_deployments=True)
         stage = apigw.Stage(
             self, "dev", deployment=deployment, stage_name="test")
-        base_api.deployment_stage = stage
 
         ##################################
         # Create Usage Plan amd add api key to it
@@ -114,5 +113,7 @@ class ApiLambdaStack(Stack):
         api_key = apigw.ApiKey(
             self, "apikey", api_key_name="prod", value=self.node.try_get_context('api-key'))
         plan.add_api_key(api_key)
+        base_api.deployment_stage = stage
+
         aws_cdk.CfnOutput(self, 'apiURL', value=base_api.url +
                           fetch_api.path.replace('/', ''))
