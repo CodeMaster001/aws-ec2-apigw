@@ -28,6 +28,6 @@ class PipelineStack(Stack):
         #Add API Stack and add a manual approval step before that
         #
         ########################################################
-        ec2_stage = pipeline.add_stage(stage=EC2Stage(self, "DummyEC2", **kwargs))
+        ec2_stage = pipeline.add_stage(stage=EC2Stage(self, "DummyEC2Instance", **kwargs))
 
         api_deployment_stage = pipeline.add_stage(stage=ApiLambdaStage(self, "APIPipleLine", **kwargs),pre=pipelines.ManualApprovalStep("Deploy API","Please use it carefully and with honor"))
