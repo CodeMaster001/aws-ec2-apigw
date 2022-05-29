@@ -10,13 +10,11 @@ from aws_cdk import (
     Duration,
     aws_iam as iam,
     aws_apigateway as apigw,
-    aws_ec2 as ec2,
-    aws_ssm as ssm
-
+    aws_ec2 as ec2
 )
 
 
-class ApiLambdaStack(Stack):
+class ccApiLambdaStack(Stack):
 
     def __init__(self, scope: Construct, construct_id: str, vpc: ec2.Vpc = None, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)

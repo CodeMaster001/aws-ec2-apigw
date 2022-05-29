@@ -2,7 +2,6 @@ import aws_cdk
 import aws_cdk.assertions as assertions
 from tests.unit.dummy_vpc import DummyVPC
 from modules.pipeline.stacks.api_lambda_stack import ApiLambdaStack
-
 #Some tests to show cdk can be tested with, we could add more tests but intrest of time ,I am adding only few tests.
 
 
