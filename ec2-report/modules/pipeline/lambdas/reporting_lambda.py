@@ -3,6 +3,7 @@ import traceback
 import json
 import logging
 
+
 def lambda_handler(event, context):
     '''
     Params:
@@ -21,14 +22,19 @@ def lambda_handler(event, context):
             regions = json.loads(event.get('body'))['regions']
 
         for region in regions:
-            result = result + get_info(region)
+            ec2client = boto3.client('ec2', region_name=region)
+            result = result + get_info(ec2client, region)
 
         data = result
     except Exception as ex:
         data = traceback.format_exc(chain=True)
-    
+
+        return {
+            "isBase64Encoded": True,
+            "statusCode": "400",
+            "body": data
+        }
     logging.info('Output generated:'+str(data))
-    
     return {
         "isBase64Encoded": True,
         "statusCode": "200",
@@ -36,7 +42,7 @@ def lambda_handler(event, context):
     }
 
 
-def get_info(region_name):
+def get_info(ec2client, region_name):
     '''
     Params:
     region_name: Name of the region from which ec2 information needs to be fetched
@@ -45,7 +51,6 @@ def get_info(region_name):
     '''
 
     result = ""
-    ec2client = boto3.client('ec2', region_name=region_name)
     response = ec2client.describe_instances()
 
     for reservation in response["Reservations"]:
