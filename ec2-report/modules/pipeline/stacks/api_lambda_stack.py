@@ -14,9 +14,11 @@ from aws_cdk import (
     aws_ssm as ssm
 
 )
+
+
 class ApiLambdaStack(Stack):
 
-    def __init__(self, scope: Construct, construct_id: str,vpc:ec2.Vpc=None, **kwargs) -> None:
+    def __init__(self, scope: Construct, construct_id: str, vpc: ec2.Vpc = None, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
         ###########################
        #
@@ -25,7 +27,8 @@ class ApiLambdaStack(Stack):
        # ########################
 
         if vpc is None:
-            vpc = ec2.Vpc.from_lookup(self,"vpc-lookup",vpc_id=self.node.try_get_context('vpc-id'))
+            vpc = ec2.Vpc.from_lookup(
+                self, "vpc-lookup", vpc_id=self.node.try_get_context('vpc-id'))
 
         self.lambda_role = iam.Role(
             self, "Role", assumed_by=iam.ServicePrincipal("lambda.amazonaws.com"))
@@ -38,7 +41,11 @@ class ApiLambdaStack(Stack):
                      "ec2:CreateNetworkInterface",
                      "ec2:DeleteNetworkInterface",
                      "ec2:DescribeInstances",
-                     "ec2:AttachNetworkInterface"]
+                     "ec2:AttachNetworkInterface",
+                     "logs:CreateLogGroup",
+                     "logs:CreateLogStream",
+                     "logs:PutLogEvents"
+                     ]
         ))
 
         ##################################
@@ -51,8 +58,8 @@ class ApiLambdaStack(Stack):
             security_group_name="sg_elb"
         )
 
-        #Extra safety for lambda
-        
+        # Extra safety for lambda
+
         self.lambda_sg.add_egress_rule(
             peer=ec2.Peer.any_ipv4(),
             connection=ec2.Port.tcp(443)
@@ -81,7 +88,7 @@ class ApiLambdaStack(Stack):
         ##################################
 
         base_api = apigw.RestApi(
-            self, 'ApiGW', rest_api_name='ec2_report', deploy=False)
+            self, 'ApiGW', rest_api_name='ec2_report', deploy=True)
 
         base_api.root.add_method("Any")
         fetch_api = base_api.root.add_resource('fetch_report')
@@ -96,7 +103,6 @@ class ApiLambdaStack(Stack):
             self, id="dep", api=base_api, retain_deployments=True)
         stage = apigw.Stage(
             self, "dev", deployment=deployment, stage_name="test")
-        base_api.deployment_stage = stage
 
         ##################################
         # Create Usage Plan amd add api key to it
@@ -105,7 +111,9 @@ class ApiLambdaStack(Stack):
         plan = base_api.add_usage_plan("usage", name="ec2_reports", throttle={
                                        "rate_limit": 10, "burst_limit": 20}, api_stages=[apigw.UsagePlanPerApiStage(api=base_api, stage=stage)])
         api_key = apigw.ApiKey(
-            self, "apikey", api_key_name="prod", value=self.node.try_get_context('api_key'))
+            self, "apikey", api_key_name="prod", value=self.node.try_get_context('api-key'))
         plan.add_api_key(api_key)
+        base_api.deployment_stage = stage
+
         aws_cdk.CfnOutput(self, 'apiURL', value=base_api.url +
                           fetch_api.path.replace('/', ''))
