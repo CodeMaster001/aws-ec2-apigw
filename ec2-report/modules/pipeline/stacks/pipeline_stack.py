@@ -2,12 +2,11 @@ import os
 from aws_cdk import Aws, pipelines
 from aws_cdk import Stack
 from aws_cdk import (
-    aws_ec2 as ec2,
     pipelines,
-    aws_iam as iam
 )
 from constructs import Construct
 from modules.pipeline.stages.api_gw_stage import ApiLambdaStage
+from modules.pipeline.stages.ec2_stage import EC2Stage
 
 class PipelineStack(Stack):
     def __init__(self, scope: Construct, id: str,  **kwargs):
@@ -23,6 +22,12 @@ class PipelineStack(Stack):
                                                                               primary_output_directory="ec2-report/cdk.out"
 
                                                                     )
+           
                                           )
+        #########################################################
+        #Add API Stack and add a manual approval step before that
+        #
+        ########################################################
+        ec2_stage = pipeline.add_stage(stage=EC2Stage(self, "DummyEC2Instance", **kwargs))
 
-        pipeline.add_stage(stage=ApiLambdaStage(self, "APIPipleLine", **kwargs))
+        api_deployment_stage = pipeline.add_stage(stage=ApiLambdaStage(self, "APIPipleLine", **kwargs),pre=pipelines.ManualApprovalStep("Deploy API","Please use it carefully and with honor"))

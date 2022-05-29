@@ -39,7 +39,7 @@ class VPCDeploymentStack(Stack):
                                    subnet_type=ec2.SubnetType.PRIVATE_WITH_NAT,
                                    cidr_mask=26
                                )
-                           ],
+                           ],default_instance_tenancy=ec2.DefaultInstanceTenancy
                            nat_gateways=1
 
                            )   
