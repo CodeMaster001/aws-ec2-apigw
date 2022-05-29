@@ -72,7 +72,7 @@ class ApiLambdaStack(Stack):
                                                 "../ec2-report/modules/pipeline/lambdas"),
                                             memory_size=2048,
                                             timeout=Duration.seconds(60*3),
-                                            role=self.lambda_role, vpc=vpc,
+                                            role=self.lambda_role,
                                             security_groups=[self.lambda_sg]
                                             )
 
